@@ -18,7 +18,7 @@ app.use(clerkMiddleware())
 app.get("/api/health", (req, res) => {
     res.status(200).json({message:"Success"});
 })
-app.use("/api/injest", serve({client:inngest, functions}))
+app.use("/api/inggest", serve({client:inngest, functions}))
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
