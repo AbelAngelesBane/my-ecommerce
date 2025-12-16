@@ -2,18 +2,23 @@ import express from "express"
 import path from "path"
 import { ENV } from "./config/env.js"
 import { connectDB } from "./config/db.js";
-import {clerkMiddleware} from "@clerk/express"
+import {clerkMiddleware} from "@clerk/express";
+import { serve } from "inngest/next";
+
+import { functions, inngest } from "./config/innjest.js";
 
 const app = express()
 
 const __dirname = path.resolve();
+
+app.use(express.json())
 
 app.use(clerkMiddleware())
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({message:"Success"});
 })
-
+app.use("/api/injest", serve({client:inngest, functions}))
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
@@ -25,8 +30,11 @@ if(ENV.NODE_ENV === "production"){
     })
 }
 
-app.listen(ENV.PORT, ()=> {
-    console.log("Server is up and running 12");
+const startServer = async ()=>{
+    app.listen(ENV.PORT, ()=>{
+        console.log("Server is up and running")
+    });
     connectDB();
-});
+}
+startServer();
 
