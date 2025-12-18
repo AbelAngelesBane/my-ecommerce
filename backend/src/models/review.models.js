@@ -2,17 +2,17 @@ import {mongoose} from "mongoose"
 
 const reviewSchema = mongoose.Schema({
     productId:{
-        type:mongoose.Schema.Type.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Product",
         required:true
     },
     userId:{
-        type:mongoose.Schema.Type.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true
     },
     orderId:{
-        type:mongoose.Schema.Type.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Order",
         required:true
     },

@@ -87,7 +87,7 @@ const orderSchema = new mongoose.Schema({
     shippedAt:{
         type:Date
     }
-},{timeStamps:true})
+},{timestamps:true})
 
 
-export const Order = new mongoose.model("Order", orderSchema)
+export const Order =  mongoose.model("Order", orderSchema)

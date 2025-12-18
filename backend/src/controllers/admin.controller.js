@@ -10,11 +10,11 @@ export async function createProduct (req,res){
         }
 
         //check if there's an image attached 
-        if(!req.res || req.files.lenght === 0){
+        if(!req.files || req.files.length === 0){
             return res.status(400).json({message:"At least one image is required"});
         }
 
-        if(req.files.lenght > 3){
+        if(req.files.length > 3){
             return res.status(400).json({message:"Maximum 3 images allowed"});
         }
 
@@ -76,13 +76,13 @@ export async function updateProduct(req, res){
         if (category) product.category = category;
 
         //handle image updates if new images are uploaded
-        if(req.files && req.files.lenght > 0){
-            if(req.files.lenght > 3){
+        if(req.files && req.files.length > 0){
+            if(req.files.length > 3){
                 return res.status(400).json({message:"Maximum 3 images allowed"});
             }
 
             const uploadPromises = req.files.map((file)=>{
-                return cloudinary.uplaoder.upload(file.path,{
+                return cloudinary.uploader.upload(file.path,{
                     folder:"products"
                 });
             });
@@ -131,7 +131,7 @@ export async function updateOrderStatus(req, res){
             order.deliveredAt = new Date();
         }
         await order.save()
-        res.status(200).message({message:"Order status updated"})
+        res.status(200).json({message:"Order status updated"})
     } catch (error) {
         console.error("Error updating products", error);
         res.status(500).json({message:"Internal server error"});   
@@ -142,7 +142,7 @@ export async function getAllCustomers (_, res){
     try {
         //add pagination here later, 15 per page
         const customers =  await User.find().sort({createdAt:-1})
-        if(!customers) return res.status(200).message({message:"No users found"})
+        if(!customers) return res.status(200).json({message:"No users found"})
         res.status(200).json(customers)
     } catch (error) {
         console.error("Error in getAllCustomers", error);
