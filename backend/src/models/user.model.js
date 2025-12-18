@@ -65,12 +65,7 @@ const userSchema = new mongoose.Schema({
             ref: "Product"
         }
     ],
-    dealslist:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Product"
-        }
-    ],
+
 },
 {timeStamps : true}
 )
