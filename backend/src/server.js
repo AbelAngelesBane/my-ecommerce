@@ -7,18 +7,21 @@ import { serve } from "inngest/next";
 
 import { functions, inngest } from "./config/innjest.js";
 
+import adminRoutes from "./routes/admin.routes.js"
+
 const app = express()
 
 const __dirname = path.resolve();
 
 app.use(express.json())
 
-app.use(clerkMiddleware())
+app.use(clerkMiddleware()) //You're wondering why there's an auth (req.auth) in auth.middleware, because clerkMiddleware added it here
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({message:"Success"});
 })
 app.use("/api/inngest", serve({client:inngest, functions}))
+app.use("/api/admin", adminRoutes)
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
