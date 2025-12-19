@@ -3,7 +3,7 @@ import path from "path";
 
 const storage = multer.diskStorage({
     filename:(req, file, cb) => {
-        const ext = path.extreme(file.originalname || "").toLowerCase();
+        const ext = path.extname(file.originalname || "").toLowerCase();
         const safeExt = [".jpeg",".jpg",".png",".webp"].includes(ext) ? ext : "";
         const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
         cb(null, `${unique}-${safeExt}`)

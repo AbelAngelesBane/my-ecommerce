@@ -5,7 +5,8 @@ import  {User}  from "../models/user.model.js";
 export async function addAddress(req, res) {
     try {
         const {label, fullName, streetAddress, city, state, zipCode, phoneNumber, isDefault} = req.body;
-        if(![label,fullName,streetAddress,city,state,zipCode,phoneNumber,isDefault])return res.status(400).json({message:"All fields required"});
+        if(!label || !fullName || !streetAddress || !city || !state || !zipCode || !phoneNumber || isDefault === undefined) return res.status(400).json({message:"All fields required"});
+       
 
         const user = req.user;
 
@@ -39,7 +40,8 @@ export async function getAddresses(req, res) {
         const user = req.user;
         res.status(200).json((user.addresses)) 
     } catch (error) {
-        
+        console.error("Error fetching addresses:", error);
+       res.status(500).json({ error: "Internal Server Error" });      
     }
 }
 
@@ -104,14 +106,14 @@ export async function addToWishList(req, res){
 
         res.status(200).json({message: "Product added to wishlist", wishlist: user.wishlist});
     } catch (error) {
-        console.error("Error updating address:", error);
+        console.error("Error updating wishlist:", error);
         res.status(500).json({ error: "Internal Server Error" });    
     }
 };
 export async function removeFromWishList(req, res){
     try {
         const user = req.user;
-        const productId = req.params;
+        const {productId} = req.params;
 
         if(!user.wishlist.includes(productId))return res.status(400).json("Product not in the list");
 
@@ -132,9 +134,9 @@ export async function getWishList(req, res){
         // if(wishlist.length === 0 || wishlist === undefined)return res.status(200).message({wishlist:0});
         res.status(200).json({wishlist});
 
-    } catch (error) {
-        console.error("Error updating address:", error);
-        res.status(500).json({ error: "Internal Server Error" });    
-    }
+     } catch (error) {       
+        console.error("Error removing from wishlist:", error);
+       res.status(500).json({ error: "Internal Server Error" });
+     }
 }
 

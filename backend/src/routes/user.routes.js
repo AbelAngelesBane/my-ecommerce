@@ -9,11 +9,11 @@ const router = Router();
 router.post("/addresses",protectRoute,addAddress);
 router.get("/addresses",protectRoute,getAddresses);
 router.put("/addresses/:addressId", protectRoute, updateAddress);
-router.delete("/addresses/:addressesId", protectRoute,  deleteAddress)
+router.delete("/addresses/:addressId", protectRoute,  deleteAddress)
 
 
 //wishList
-router.get("/wishlist", addToWishList);
-router.delete("/wishlist/:productId", removeFromWishList);
-router.get("/wishlist", getWishList);
+router.post("/wishlist", protectRoute, addToWishList);
+router.get("/wishlist", protectRoute, getWishList);
+router.delete("/wishlist/:productId", protectRoute, removeFromWishList);
 export default router;
