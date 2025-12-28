@@ -4,7 +4,7 @@ import { adminOnly, protectRoute } from "../middlewares/auth.middleware.js";
 import { upload  } from "../middlewares/multer.middleware.js";
 
 const router = Router();
-router.use(protectRoute, adminOnly)
+router.use(...protectRoute, adminOnly)
 router.post("/products",upload.array("images", 3),createProduct);
 router.get("/products",getAllProducts);
 router.put("/products/:id",upload.array("images", 3),updateProduct);

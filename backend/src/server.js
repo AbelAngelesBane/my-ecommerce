@@ -9,6 +9,7 @@ import { functions, inngest } from "./config/innjest.js";
 
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js"
+import orderRoutes from "./routes/order.routes.js"
 
 const app = express()
 
@@ -24,6 +25,8 @@ app.get("/api/health", (req, res) => {
 app.use("/api/inngest", serve({client:inngest, functions}))
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
+
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
     app.use(express.static(path.join(__dirname, "../admin/dist"))); 

@@ -2,15 +2,19 @@
   "name": "shopping-app",
   "version": "1.0.0",
   "main": "index.js",
-  "engines":{
-    "node":">=20.0.0"
+  "engines": {
+    "node": ">=20.0.0"
   },
   "scripts": {
-    "build":"npm install --prefix backend && npm install --prefix admin && npm run build --prefix admin",
-    "start":"npm run start --prefix backend"
+    "build": "npm install --prefix backend && npm install --prefix admin && npm run build --prefix admin",
+    "start": "npm run start --prefix backend"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3"
+  }
 }

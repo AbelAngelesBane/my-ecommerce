@@ -15,9 +15,9 @@ const fileFilter = (req, file, cb)=>{
 
     const allowedTypes = /jpeg|jpg|png|webp/
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase()) //returns a bool, it's a test
-    const mimeType = allowedTypes.test(file.mimeType) //returns a bool, it's a test
+    const mimetype = allowedTypes.test(file.mimetype) //returns a bool, it's a test
 
-    if(extname && mimeType){
+    if(extname && mimetype){
         cb(null,true)
     }else{
         cb(new Error("Only image files are allowed (jpeg,jpg,png,webp)"))

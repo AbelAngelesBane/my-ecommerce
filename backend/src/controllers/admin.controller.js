@@ -1,13 +1,27 @@
 import cloudinary from "../config/cloudinary.js";
-import {Product} from "../models/product.models.js";
+import {Product} from "../models/product.model.js";
 import {Order} from "../models/order.model.js";
 import {User} from "../models/user.model.js"
 export async function createProduct (req,res){
+    
     try {
-        const {name, description, price,stock,category} = req.body;
-        if(!name || !description || !price || !stock || !category){
-            return res.status(400).json({message:"All fields are required"});
-        }
+        const error = [];
+
+        const requiredFields = ["name", "description", "price", "stock","category"]
+
+        const fieldNames = Object.keys(req.body);
+        const {name, description, price, stock, category} = req.body;
+
+        if(fieldNames === undefined || fieldNames === null){
+            return res.status(400).json({message:element + "All fields are required"});
+        } 
+        
+        requiredFields.forEach((field,index) => {
+            if(!requiredFields.includes(fieldNames[index]))error.push(field)
+        });
+
+        if(!error)return res.status(400).json({error:`The following fields are required: ${error.length}`});
+
 
         //check if there's an image attached 
         if(!req.files || req.files.length === 0){
@@ -30,7 +44,7 @@ export async function createProduct (req,res){
         const imageUrls = uploadResults.map((urls) => urls.secure_url);
 
         const product = await Product.create({
-            name,
+            name:name,
             description,
             price: parseFloat(price),
             stock:parseInt(stock), 
@@ -47,6 +61,7 @@ export async function createProduct (req,res){
 }
 
 export async function getAllProducts(_, res) { //_ means not using variable
+    console.log("get prod")
     try {
         const products = await Product.find().sort({createdAt:-1});
         res.status(200).json({products})
