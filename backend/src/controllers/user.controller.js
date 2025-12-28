@@ -129,7 +129,7 @@ export async function removeFromWishList(req, res){
 export async function getWishList(req, res){
     try {
         
-        const wishlist = await User.findById(req.user._id).populate("wishlist")
+        const wishlist = await User.findById(req.user._id).populate("wishlist").wishlist
         // if(wishlist.length === 0 || wishlist === undefined)return res.status(200).message({wishlist:0});
         res.status(200).json({wishlist});
 
