@@ -5,5 +5,4 @@ const router = Router();
 
 router.get("/", getProducts);
 router.get("/:id", getProduct);
-router.get("/:category", getProductsByCategory);
-export default router;
+router.get("/category/:category", getProductsByCategory);export default router;
