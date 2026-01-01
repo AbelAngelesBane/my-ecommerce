@@ -1,7 +1,6 @@
 
 import { Review } from "../models/review.models.js";
 import { Order } from "../models/order.model.js";
-import { error } from "console";
 import { Product } from "../models/product.model.js";
 
 export async function getProductReviews(req, res){
@@ -50,6 +49,9 @@ export  async function createProductReview(req, res){
         // review.create() calls the .save() already
         //update the product rating
         const product = await Product.findById({productId});
+        if (!product) {
+           return res.status(404).json({ error: "Product not found" });
+       }
         const reviews = await Review.find({productId});
         const totalrating =  reviews.reduce((sum, rev) => sum + rev.rating, 0);
         product.averageRating = totalrating / reviews.length;
