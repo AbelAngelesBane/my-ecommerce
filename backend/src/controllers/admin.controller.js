@@ -64,7 +64,7 @@ export async function getAllProducts(_, res) { //_ means not using variable
     console.log("get prod")
     try {
         const products = await Product.find().sort({createdAt:-1});
-        res.status(200).json({products})
+        res.status(200).json({items: products.length,products})
     } catch (error) {
         console.error("Error finding products", error);
         res.status(500).json({message:"Internal server error"});       
