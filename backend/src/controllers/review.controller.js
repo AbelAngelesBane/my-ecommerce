@@ -7,9 +7,10 @@ import { Product } from "../models/product.model.js";
 export async function getProductReviews(req, res){
     try {
         const {productId} = req.body;
-        const review = await Review.find({productId})
+        const review = await Review.find({productId});
+        res.status(200).json({reviews: review});
     } catch (error) {
-        
+        return res.status(500).json({error: "Internal server error"});
     }
 }
 export  async function createProductReview(req, res){
