@@ -10,6 +10,8 @@ import { functions, inngest } from "./config/innjest.js";
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js"
 import orderRoutes from "./routes/order.routes.js"
+import reviewRoutes from "./routes/review.routes.js"
+import productRoutes from "./routes/product.routes.js"
 
 const app = express()
 
@@ -26,6 +28,8 @@ app.use("/api/inngest", serve({client:inngest, functions}))
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/products", productRoutes);
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
