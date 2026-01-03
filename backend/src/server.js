@@ -23,7 +23,7 @@ const __dirname = path.resolve();
 app.use(express.json())
 
 app.use(clerkMiddleware()) //You're wondering why there's an auth (req.auth) in auth.middleware, because clerkMiddleware added it here
-app.use(cors({origin:ENV.CLIENT_URL, credentials:true}));
+app.use(cors({origin:ENV.CLIENT_URL, credentials:true})); //credentials true allos browser to send cookies to the server with the request
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({message:"Success"});

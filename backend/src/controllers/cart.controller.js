@@ -28,8 +28,8 @@ export async function addToCart(req,res){
 
     try {
         const {productId, quantity = 1} = req.body;
-        const product = await Product.findOne({productId});
-        if(!product)res.status(404).json({error:"Product not found"});
+        const product = await Product.findById(productId);
+        if(!product)return res.status(404).json({error:"Product not found"});
         if(product.quantity < quantity)return res.status(400).json({error:"Product quantity insufficient"})
         //if this product is in the cart already, only add quantity
         let cart = await Cart.findOneAndUpdate(
@@ -50,7 +50,7 @@ export async function addToCart(req,res){
                 { user: req.user._id },
                 { 
                 $push: { 
-                    items: { productId, quantity, name, price, image } 
+                    items: {productId, quantity } 
                     } 
                 },
                 { upsert: true, new: true } // upsert: true creates the cart if it doesn't exist
@@ -69,6 +69,7 @@ export async function updateCartItem(req, res){
     try {
         const {productId} = req.params;
         const {quantity} = req.body;
+        const user = req.user;
 
         if(quantity < 1){
             return res.status(400).json({error:"Quantity must be atleast 1"});
@@ -77,13 +78,13 @@ export async function updateCartItem(req, res){
         const cart = await Cart.findOne({user:user._id});
         if(!cart)return res.status(400).json({error:"Cart not found"});
 
-        const itemIndex = cart.items.findIndex((item) => item.product.toString() === productId);
+        const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
         if(itemIndex === -1)return res.status(404).json({error: "Item not found in cart"});
 
         //validate product and stock
-        const product = await Product.findById({productId});
+        const product = await Product.findById(productId);
         if(!product)return res.status(404).json({error: "Product not found"});
-        if(product.stock < quantity) res.status(404).json({error: "Insufficient stock"});
+        if(product.quantity < quantity)return res.status(404).json({error: "Insufficient stock"});
 
         cart.items[itemIndex].quantity = quantity;
         await cart.save(); 
@@ -99,12 +100,13 @@ export async function updateCartItem(req, res){
 export async function clearCart(req, res){
     try {
         const user = req.user._id;
-        const cart = await Cart.findOne({user:user});
-        await cart.updateOne(
-            {$set: {items:[]}}
+       
+        const cart = await cart.updateOne(
+            {user: user},
+            {$set: {items:[]}},
+            {new: true}
         );
-        return res.status(200).json({message:"Cart cleared", cart});
-
+         res.status(200).json({message:"Cart cleared", cart});
     } catch (error) {
         console.log("Error in cart controller");
         return res.status(500).json({error:"Internal Server Error"});     
@@ -117,9 +119,8 @@ export async function removeFromCart(req, res) {
         const {productId} = req.params;
         let cart = await Cart.findOne({user:user._id});
         if(!cart)return res.status(400).json({error:"Cart doesnt exist or empty"});
-        const product = await Product.findById(productId);
         //filter method  
-        cart = await cart.items.filter((item) => {
+        cart.items = await cart.items.filter((item) => {
             item.product.toString() !== productId
         });
         await cart.save()
