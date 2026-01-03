@@ -1,9 +1,11 @@
 import express from "express"
 import path from "path"
+import cors from "cors"
 import { ENV } from "./config/env.js"
 import { connectDB } from "./config/db.js";
 import {clerkMiddleware} from "@clerk/express";
 import { serve } from "inngest/next";
+
 
 import { functions, inngest } from "./config/innjest.js";
 
@@ -12,6 +14,7 @@ import userRoutes from "./routes/user.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 import reviewRoutes from "./routes/review.routes.js"
 import productRoutes from "./routes/product.routes.js"
+import cartRoutes from "./routes/cart.routes.js"
 
 const app = express()
 
@@ -20,6 +23,7 @@ const __dirname = path.resolve();
 app.use(express.json())
 
 app.use(clerkMiddleware()) //You're wondering why there's an auth (req.auth) in auth.middleware, because clerkMiddleware added it here
+app.use(cors({origin:ENV.CLIENT_URL, credentials:true}));
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({message:"Success"});
@@ -30,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend
