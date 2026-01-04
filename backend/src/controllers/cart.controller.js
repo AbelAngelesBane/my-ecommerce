@@ -101,7 +101,7 @@ export async function clearCart(req, res){
     try {
         const user = req.user._id;
        
-        const cart = await cart.updateOne(
+        const cart = await Cart.updateOne(
             {user: user},
             {$set: {items:[]}},
             {new: true}
