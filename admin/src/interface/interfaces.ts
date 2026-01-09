@@ -6,8 +6,7 @@ export interface OrderModel{
     _id:string,
     user:string,
     clerkId:string,
-    orderItems:[OrderItems],
-    shippingAddress:Address,
+    orderItems: OrderItems[],    shippingAddress:Address,
     totalPrice: number,
     status: string,
     updatedAt:string
@@ -31,7 +30,7 @@ export interface OrderItems{
     price:number,
     stock:number,
     category:string,
-    images:[string],
+    images: string[],    
     averageRating:number,
     totalReviews:number,
     createdAt:string,
@@ -41,4 +40,13 @@ export interface OrderItems{
   quantity:number,
   image:string,
   _id:string,
+}
+
+export interface ProductParams {
+    name: string,
+    description: string,
+    price: number,
+    stock: number,
+    category: string,
+    images:File[]
 }

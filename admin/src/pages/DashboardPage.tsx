@@ -97,8 +97,8 @@ const DashboardPage = () => {
 
                       <td>
                         <div>
-                          <div className="font-medium">{order.orderItems.length > 1 
-                          ? `${`${order.orderItems[0].product.name} +${order.orderItems.length} more`  }` 
+                          <div className="font-medium">{order.orderItems.length > 1 ? 
+                          `${order.orderItems[0].product.name} +${order.orderItems.length - 1} more` 
                           : order.orderItems[0].product.name }</div>
                         </div>
                       </td>

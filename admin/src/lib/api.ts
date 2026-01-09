@@ -1,15 +1,9 @@
+import type { ProductParams } from "../interface/interfaces";
 import axiosInstance from "./axios";
 
 
 
-interface ProductParams {
-    name: string,
-    description: string,
-    price: number,
-    stock: number,
-    category: string,
-    images:File
-}
+
 
 
 export const productApi = {

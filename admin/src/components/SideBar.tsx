@@ -45,7 +45,7 @@ function SideBar() {
             <div className="p-4 w-full">
                 <div className="flex items-center gap-3">
                     <img src={user?.imageUrl} alt={user?.fullName ?? "User"} className="size-10 rounded-full"/>
-                    <div className="text-xs opacity-60 truncate">{user?.emailAddresses[0].emailAddress}</div>
++                    <div className="text-xs opacity-60 truncate is-drawer-close:hidden">{user?.emailAddresses?.[0]?.emailAddress ?? 'No email'}</div>
                 </div>  
             </div>
         </div>
