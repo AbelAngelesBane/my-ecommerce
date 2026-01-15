@@ -1,4 +1,5 @@
 import {mongoose} from "mongoose"
+import { type } from "os";
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -41,6 +42,10 @@ const productSchema = new mongoose.Schema({
     discount:{
         type:Number,
         required:false
+    },
+    isArchived: {
+        type:Boolean,
+        default: false
     }
 
 },{timestamps:true});

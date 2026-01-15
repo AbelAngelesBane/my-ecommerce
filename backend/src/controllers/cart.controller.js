@@ -2,7 +2,7 @@ import { error } from "console";
 import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
 
-
+//TO IMPLEMENT LATER, REMOVE ARCHIVED PRODUCTS FROM RESULT
 export async function getCart(req, res) {
     try {
         let cart = await Cart.findOne({user: req.user._id}).populate("items.product");

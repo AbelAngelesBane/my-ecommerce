@@ -1,4 +1,3 @@
-import type { ProductParams } from "../interface/interfaces";
 import axiosInstance from "./axios";
 
 
@@ -16,12 +15,16 @@ export const productApi = {
     //     const { data } = await axiosInstance.post("/admin/products", { name, price, description });
     //     return data;
     // }
-    create: async  (formData:ProductParams) => {
-    const {data} = await axiosInstance.post("/admin/products", formData);
-    return data;
+    create: async  (formData:FormData) => {
+        const {data} = await axiosInstance.post("/admin/products", formData);
+        return data;
     },
-    update: async ({id, formData}:{id:string, formData: ProductParams}) => {
+    update: async ({id, formData}:{id:string, formData: FormData}) => {
         const {data} = await axiosInstance.put(`/admin/products/${id}`, formData)
+        return data;
+    },
+    patch:async (id:string)=>{
+        const data = await axiosInstance.patch(`admin/products/${id}/archive`);
         return data;
     }
 }

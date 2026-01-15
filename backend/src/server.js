@@ -5,6 +5,7 @@ import { ENV } from "./config/env.js"
 import { connectDB } from "./config/db.js";
 import {clerkMiddleware} from "@clerk/express";
 import { serve } from "inngest/next";
+import { runMigration } from "./scripts/migration.js";
 
 
 import { functions, inngest } from "./config/innjest.js";
@@ -35,6 +36,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.put("/migration",runMigration);
 
 if(ENV.NODE_ENV === "production"){
     //says both serve the react and backend

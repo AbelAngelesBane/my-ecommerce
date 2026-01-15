@@ -7,18 +7,14 @@ import type { OrderModel } from "../interface/interfaces.ts";
 
 
 const DashboardPage = () => {
-
   const {data:ordersData, isLoading:ordersLoading} = useQuery({
     queryKey:["orders"], 
     queryFn:orderApi.getAll,
   });
-
     const {data:statsData, isLoading:statsLoading} = useQuery({
     queryKey:["stats"], 
     queryFn:statsApi.getDashboard,
   });
-
-
 
   const recentOrders =  ordersLoading || !ordersData ? [] : ordersData.orders
   const stats = [
@@ -109,7 +105,7 @@ const DashboardPage = () => {
                       </td>
                       <td>
                         <div>
-                          <div className={`font-medium ${orderStatusBadge(order.status)}`} >{order.status}</div>
+                          <div className={`badge ${orderStatusBadge(order.status)}`} >{(order.status).toUpperCase()}</div>
                         </div>
                       </td>       
                       <td>
