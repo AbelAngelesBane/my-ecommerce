@@ -3,5 +3,10 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx"
+  }
 }
