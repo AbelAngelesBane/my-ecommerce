@@ -83,8 +83,7 @@ export async function updateProduct(req, res){
         const {name, description, price,stock,category} = req.body;
 
         if(!name && !description && !price && !stock && !category){
-            return res.status(400).json({error:"At least one field is required"});
-        }
+            return res.status(400).json({error:"At least one field is required"});        }
 
         const product = await Product.findById(id);
         if(!product){
