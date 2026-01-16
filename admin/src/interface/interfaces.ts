@@ -43,6 +43,7 @@ export interface OrderItems{
 }
 
 export interface ProductParams {
+    _id:string,
     name: string,
     description: string,
     price: number,

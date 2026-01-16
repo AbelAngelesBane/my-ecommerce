@@ -10,26 +10,30 @@ export async function createProduct (req,res){
         const requiredFields = ["name", "description", "price", "stock","category"]
 
         const fieldNames = Object.keys(req.body);
-        const {name, description, price, stock, category} = req.body;
 
-        if(fieldNames === undefined || fieldNames === null){
-            return res.status(400).json({message:element + "All fields are required"});
-        } 
+        //check if all fields are present
+        console.log("Field names", fieldNames)
+        requiredFields.forEach((field) => {
+            if(!fieldNames.includes(field))error.push(field)
+        });    
+        if(error.length > 0)return res.status(400).json({error:`The following fields are required: ${error}`});
         
-        requiredFields.forEach((field,index) => {
-            if(!requiredFields.includes(fieldNames[index]))error.push(field)
-        });
-
-        if(!error)return res.status(400).json({error:`The following fields are required: ${error.length}`});
-
-
+        const {name, description, price, stock, category} = req.body;
+        
+        //check if all fields are not empty
+        if(!name)error.push("name")
+        if(!description)error.push("description")
+        if(!price)error.push("price")
+        if(!stock)error.push("stock")
+        if(error.length > 0)return res.status(400).json({error:`The following fields are empty: ${error}`});
+        
         //check if there's an image attached 
         if(!req.files || req.files.length === 0){
-            return res.status(400).json({message:"At least one image is required"});
+            return res.status(400).json({error:"At least one image is required"});
         }
 
         if(req.files.length > 3){
-            return res.status(400).json({message:"Maximum 3 images allowed"});
+            return res.status(400).json({error:"Maximum 3 images allowed"});
         }
 
         const uploadPromises = req.files.map((file) => {
@@ -54,8 +58,8 @@ export async function createProduct (req,res){
         res.status(200).json(product)
 
     } catch (error) {
-        console.error("Error creating product", error);
-        res.status(500).json({message:"Internal server error"});
+        console.error("Error creating product", error.response.data);
+        res.status(500).json({error:"Internal server error"});
         
     }
 }
@@ -63,11 +67,13 @@ export async function createProduct (req,res){
 export async function getAllProducts(_, res) { //_ means not using variable
     console.log("get prod")
     try {
-        const products = await Product.find().sort({createdAt:-1});
+        const products = await Product.find({
+            isArchived:{$ne:true}
+        }).sort({createdAt:-1});
         res.status(200).json({items: products.length,products})
     } catch (error) {
         console.error("Error finding products", error);
-        res.status(500).json({message:"Internal server error"});       
+        res.status(500).json({error:"Internal server error"});       
     }
 }
 
@@ -77,12 +83,11 @@ export async function updateProduct(req, res){
         const {name, description, price,stock,category} = req.body;
 
         if(!name && !description && !price && !stock && !category){
-            return res.status(400).json({message:"At least one field is required"});
-        }
+            return res.status(400).json({error:"At least one field is required"});        }
 
         const product = await Product.findById(id);
         if(!product){
-            return res.status(404).json({message:"Product not found"});
+            return res.status(404).json({error:"Product not found"});
         }
         if(name) product.name = name;
         if(description) product.description = description;
@@ -93,7 +98,7 @@ export async function updateProduct(req, res){
         //handle image updates if new images are uploaded
         if(req.files && req.files.length > 0){
             if(req.files.length > 3){
-                return res.status(400).json({message:"Maximum 3 images allowed"});
+                return res.status(400).json({error:"Maximum 3 images allowed"});
             }
 
             const uploadPromises = req.files.map((file)=>{
@@ -109,7 +114,7 @@ export async function updateProduct(req, res){
         res.status(200).json(product);
     } catch (error) {
         console.error("Error updating products", error);
-        res.status(500).json({message:"Internal server error"});         
+        res.status(500).json({error:"Internal server error"});         
     }
 }
 
@@ -125,7 +130,7 @@ export async function getAllOrders(req, res){
         res.status(200).json({orders})
     } catch (error) {
         console.error("Error fetching products", error);
-        res.status(500).json({message:"Internal server error"});   
+        res.status(500).json({error:"Internal server error"});   
     }
 }
 
@@ -149,7 +154,7 @@ export async function updateOrderStatus(req, res){
         res.status(200).json({message:"Order status updated"})
     } catch (error) {
         console.error("Error updating products", error);
-        res.status(500).json({message:"Internal server error"});   
+        res.status(500).json({error:"Internal server error"});   
     }
 }
 
@@ -157,11 +162,10 @@ export async function getAllCustomers (_, res){
     try {
         //add pagination here later, 15 per page
         const customers =  await User.find().sort({createdAt:-1})
-        if(!customers) return res.status(200).json({message:"No users found"})
         res.status(200).json(customers)
     } catch (error) {
         console.error("Error in getAllCustomers", error);
-        res.status(500).json({message:"Internal server error"});  
+        res.status(500).json({error:"Internal server error"});  
     }
 }
 
@@ -186,6 +190,47 @@ export async function getDashboardStats(_, res){
     res.status(200).json({totalRevenue,totalOrders, totalCustomers, totalProducts})
     } catch (error) {
         console.error("Error in dashboard stats", error);
-        res.status(500).json({message:"Internal server error"});  
+        res.status(500).json({error:"Internal server error"});  
     }
+}
+
+export async function archiveProduct(req, res) {
+    try {
+        const { productId } = req.params;
+
+        // findByIdAndUpdate bypasses some strict schema checks if configured, 
+        // but it's better to just have the schema updated.
+        const product = await Product.findByIdAndUpdate(
+            productId,
+            {
+                $set: {
+                    isArchived: true,
+                    archivedAt: new Date()
+                }
+            },
+            { new: true } // Returns the updated document
+        );
+
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Successfully archived", product });
+    } catch (error) {
+        console.error("Archive Error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function checkArchive(req, res){
+    try {
+        const allProductsEver = await Product.find({}).lean(); 
+        console.log("Total products in DB:", allProductsEver.length);
+        console.log("Archived products in DB:", allProductsEver.filter(p => p.isArchived).length);
+        return res.status(200).json({allProductsEver})       
+    } catch (error) {
+        console.error("Error in checkArchive:", error);
+        return res.status(500).json({ error: "Internal server error" });              
+    }
+
 }

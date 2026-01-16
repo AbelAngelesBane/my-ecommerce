@@ -48,7 +48,7 @@ export  async function createProductReview(req, res){
 
         // review.create() calls the .save() already
         //update the product rating
-        const product = await Product.findById({productId});
+        const product = await Product.findById(productId);
         if (!product) {
            return res.status(404).json({ error: "Product not found" });
        }
