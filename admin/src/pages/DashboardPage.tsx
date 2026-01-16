@@ -93,9 +93,11 @@ const DashboardPage = () => {
 
                       <td>
                         <div>
-                          <div className="font-medium">{order.orderItems.length > 1 ? 
-                          `${order.orderItems[0]?.product?.name || 'Unknown'} +${order.orderItems.length - 1} more` 
-                          : order.orderItems[0]?.product?.name || 'Unknown'}</div>
+                        <div className="font-medium">
+                          {(order.orderItems?.length || 0) > 1 
+                            ? `${order.orderItems[0]?.product?.name || 'Unknown'} +${order.orderItems.length - 1} more` 
+                            : order.orderItems?.[0]?.product?.name || 'Unknown'}
+                        </div>
                         </div>
                       </td>
                       <td>
@@ -104,7 +106,7 @@ const DashboardPage = () => {
                       </td>
                       <td>
                         <div>
-                          <div className={`badge ${orderStatusBadge(order.status)}`} >{(order.status).toUpperCase()}</div>
+                          <div className={`badge ${orderStatusBadge(order.status)}`} >{(order.status ?? "unknown").toUpperCase()}</div>
                         </div>
                       </td>       
                       <td>
