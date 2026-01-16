@@ -20,7 +20,7 @@ const DashboardPage = () => {
   const stats = [
     {
       name:"Total Revenue",
-      value: statsLoading || !statsData ? "..." : `${statsData.totalRevenue.toFixed(2) || 0}`,
+      value: statsLoading || !statsData ? "..." : `$${(statsData.totalRevenue ?? 0).toFixed(2)}`,
       icon:<DollarSignIcon className="size-8"/>
     },
     {
@@ -100,8 +100,7 @@ const DashboardPage = () => {
                       </td>
                       <td>
                         <div>
-                          <div className="font-medium">{order.totalPrice.toFixed(2)}</div>
-                        </div>
+                        <div className="font-medium">${(order.totalPrice ?? 0).toFixed(2)}</div>                        </div>
                       </td>
                       <td>
                         <div>
