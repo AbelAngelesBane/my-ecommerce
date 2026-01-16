@@ -46,6 +46,10 @@ const productSchema = new mongoose.Schema({
     isArchived: {
         type:Boolean,
         default: false
+    },
+    archivedAt:{
+        type: Date,
+        default: null
     }
 
 },{timestamps:true});

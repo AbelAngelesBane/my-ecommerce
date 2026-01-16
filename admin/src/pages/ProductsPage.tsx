@@ -9,7 +9,7 @@ import type { AxiosError } from "axios";
 
 
 function ProductsPage() {
-
+  const [archivingProductId, setArchivingProductId] = useState<string | null>();
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductParams | null>(null);
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ const createProductMutation = useMutation({
         const errorMessage = (error.response.data as { error?: string }).error || "Something went wrong";
         setErrors(errorMessage); 
     } else {
-        // 3. Handle cases where the server is down or network is lost
+        // 3. Handle cases where the server is down or network is lostf
         setErrors(error.message || "Network Error");
     }
 },
@@ -73,9 +73,11 @@ const updateProductMutation = useMutation({
 const archiveProductMutation = useMutation({
   mutationFn: productApi.patch,
   onSuccess:() =>{
+      setArchivingProductId(null);
       queryClient.invalidateQueries({queryKey:["products"]})
   },
   onError: (error:AxiosError) => {
+    setArchivingProductId(null);
     // 1. Check if the server actually sent a response
     if (error.response && error.response.data) {
         // 2. Extract the 'error' field you defined in your backend
@@ -91,6 +93,7 @@ const archiveProductMutation = useMutation({
 
 const closeModal= ()=>{
   setShowModal(false);
+  setErrors(null)
   setEditingProduct(null);
   setFormData({
     name:"",
@@ -100,6 +103,12 @@ const closeModal= ()=>{
     description:""
   });
   setImages([]);
+  // Revoke previous object URLs to prevent memory leaks
+  imagePreviews.forEach((preview) => {
+    if (typeof preview === "string" && preview.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
+  });
   setImagePreviews([]);
 };
 
@@ -118,8 +127,14 @@ const handleEdit= (product:ProductParams)=>{
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleImageChange = (e:any)=>{
-  const files = Array.from(e.target.files) as File[]
+  const files = Array.from(e.target.files ?? []) as File[];
   if(files.length > 3) return alert("Maximum of 3 images allowed");
+  // Revoke previous object URLs to prevent memory leaks
+  imagePreviews.forEach((preview) => {
+    if (typeof preview === "string" && preview.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
+  });
   setImages(files);
   setImagePreviews(files.map((file) => URL.createObjectURL(file)));
 }
@@ -156,7 +171,9 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
           <h1 className="text-2xl font-bold">Products</h1>
           <p className="text-base-content/70 mt-1">Manage Product Inventory</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn btn-primary gap-2">Add product</button>
+        <button onClick={() => {
+          setShowModal(true)
+          setErrors(null)}} className="btn btn-primary gap-2">Add product</button>
       </div>
       {/* Product Grid */}
       <div className="grid grid-cols-1 gap-4">
@@ -202,8 +219,14 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
                     <button className="btn btn-square btn-ghost" onClick={()=>handleEdit(product)}>
                       <PencilIcon className="w-5 h-5"/>
                     </button>
-                    <button className="btn btn-square btn-ghost text-error" onClick={()=>archiveProductMutation.mutate(product._id)}>
-                      {archiveProductMutation.isPending ? <span className="loading loading-spinner loading-xs"></span> : <Trash2Icon className="w-5 h-5"/>
+                    <button 
+                    disabled={archivingProductId === product._id}
+                    className="btn btn-square btn-ghost text-error" onClick={()=> 
+                    {
+                      setArchivingProductId(product._id)
+                      archiveProductMutation.mutate(product._id)
+                    }}>
+                      {archivingProductId === product._id ? <span className="loading loading-spinner loading-xs"></span> : <Trash2Icon className="w-5 h-5"/>
                       }
                       
                     </button>
@@ -216,7 +239,7 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
       </div>
 
       {/* Add edit modal */}
-      <input type="checkbox" id="my_modal_6" className="modal-toggle" checked={showModal}/>
+      <input type="checkbox" id="my_modal_6" className="modal-toggle" checked={showModal} readOnly/>
       <div className="modal">
         <div className="modal-box max-w-2xl">
           <div className="flex items-center justify-between mb-4">
@@ -345,8 +368,7 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
 
                 <button 
                   className="btn btn-primary"
-                  type="button"
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={createProductMutation.isPending || updateProductMutation.isPending}
                   >{
                     createProductMutation.isPending || updateProductMutation.isPending ? (<span className="loading loading-spinner loading-xs"/>) : editingProduct ? (

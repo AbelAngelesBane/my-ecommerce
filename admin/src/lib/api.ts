@@ -16,15 +16,16 @@ export const productApi = {
     //     return data;
     // }
     create: async  (formData:FormData) => {
-        const {data} = await axiosInstance.post("/admin/products", formData);
+        const {data} = await axiosInstance.post("admin/products", formData);
         return data;
     },
     update: async ({id, formData}:{id:string, formData: FormData}) => {
-        const {data} = await axiosInstance.put(`/admin/products/${id}`, formData)
+        const {data} = await axiosInstance.put(`admin/products/${id}`, formData)
         return data;
     },
     patch:async (id:string)=>{
-        const data = await axiosInstance.patch(`admin/products/${id}/archive`);
+        // data returns full axios response, {data} destructures
+        const {data} = await axiosInstance.patch(`admin/products/${id}/archive`);
         return data;
     }
 }

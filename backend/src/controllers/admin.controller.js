@@ -14,7 +14,7 @@ export async function createProduct (req,res){
         //check if all fields are present
         console.log("Field names", fieldNames)
         requiredFields.forEach((field) => {
-            if(!fieldNames.includes(field))error.push({field})
+            if(!fieldNames.includes(field))error.push(field)
         });    
         if(error.length > 0)return res.status(400).json({error:`The following fields are required: ${error}`});
         
@@ -163,7 +163,6 @@ export async function getAllCustomers (_, res){
     try {
         //add pagination here later, 15 per page
         const customers =  await User.find().sort({createdAt:-1})
-        if(!customers) return res.status(200).json({error:"No users found"})
         res.status(200).json(customers)
     } catch (error) {
         console.error("Error in getAllCustomers", error);
@@ -225,8 +224,14 @@ export async function archiveProduct(req, res) {
 }
 
 export async function checkArchive(req, res){
-    const allProductsEver = await Product.find({}).lean(); 
-    console.log("Total products in DB:", allProductsEver.length);
-    console.log("Archived products in DB:", allProductsEver.filter(p => p.isArchived).length);
-    return res.status(200).json({allProductsEver})
+    try {
+        const allProductsEver = await Product.find({}).lean(); 
+        console.log("Total products in DB:", allProductsEver.length);
+        console.log("Archived products in DB:", allProductsEver.filter(p => p.isArchived).length);
+        return res.status(200).json({allProductsEver})       
+    } catch (error) {
+        console.error("Error in checkArchive:", error);
+        return res.status(500).json({ error: "Internal server error" });              
+    }
+
 }

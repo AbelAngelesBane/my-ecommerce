@@ -17,6 +17,15 @@ export async function getCart(req, res) {
                 items:[]
             });
         }
+        // Filter out archived products
+        if(cart && cart.items) {
+            cart.items = cart.items.filter(item => 
+                item.product && !item.product.isArchived
+            );
+           await cart.save();
+       }
+
+
         //get total here
         return res.status(200).json({cart});
     } catch (error) {
@@ -30,6 +39,7 @@ export async function addToCart(req,res){
         const {productId, quantity = 1} = req.body;
         const product = await Product.findById(productId);
         if(!product)return res.status(404).json({error:"Product not found"});
+        if(product.isArchived)return res.status(400).json({error:"Product is no longer available"});
         if(product.quantity < quantity)return res.status(400).json({error:"Product quantity insufficient"})
         //if this product is in the cart already, only add quantity
         let cart = await Cart.findOneAndUpdate(
@@ -83,6 +93,7 @@ export async function updateCartItem(req, res){
 
         //validate product and stock
         const product = await Product.findById(productId);
+       if(product.isArchived)return res.status(400).json({error: "Product is no longer available"});
         if(!product)return res.status(404).json({error: "Product not found"});
         if(product.quantity < quantity)return res.status(404).json({error: "Insufficient stock"});
 
@@ -120,7 +131,7 @@ export async function removeFromCart(req, res) {
         let cart = await Cart.findOne({user:user._id});
         if(!cart)return res.status(400).json({error:"Cart doesnt exist or empty"});
         //filter method  
-        cart.items = await cart.items.filter((item) => {
+        cart.items = cart.items.filter((item) => {
             item.product.toString() !== productId
         });
         await cart.save()
