@@ -16,7 +16,7 @@ const DashboardPage = () => {
     queryFn:statsApi.getDashboard,
   });
 
-  const recentOrders =  ordersLoading || !ordersData ? [] : ordersData.orders
+  const recentOrders =  ordersLoading || !ordersData ? [] : ordersData.orders || []
   const stats = [
     {
       name:"Total Revenue",
