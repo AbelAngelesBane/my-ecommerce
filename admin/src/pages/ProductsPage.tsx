@@ -128,7 +128,7 @@ const handleEdit= (product:ProductParams)=>{
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleImageChange = (e:any)=>{
   const files = Array.from(e.target.files ?? []) as File[];
-  if(files.length > 3) return alert("Maximum of 3 images allowed");
+  if((files.length ?? 0) > 3) return alert("Maximum of 3 images allowed");
   // Revoke previous object URLs to prevent memory leaks
   imagePreviews.forEach((preview) => {
     if (typeof preview === "string" && preview.startsWith("blob:")) {
@@ -142,7 +142,7 @@ const handleImageChange = (e:any)=>{
 const handleSubmit = (e: { preventDefault: () => void; }) => {
   //doesn't refresh the page once we submit
   e.preventDefault();
-  if(!editingProduct && imagePreviews.length === 0)return alert("Please upload at least one image");
+  if(!editingProduct && (imagePreviews.length ?? 0) === 0)return alert("Please upload at least one image");
 
   const formDataToSend = new FormData();
   formDataToSend.append("name", formData.name);
@@ -153,7 +153,7 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
 
   //only append new images if their selected
 
-  if(images.length > 0) images.forEach(image => formDataToSend.append("images", image));
+  if((images.length ?? 0) > 0) images.forEach(image => formDataToSend.append("images", image));
 
   if(editingProduct){
     updateProductMutation.mutate({id: editingProduct._id, formData:formDataToSend})
@@ -189,7 +189,7 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
                 <div className="flex items-center gap-6">
                   <div className="avatar">
                     <div className="w-20 rounded-xl">
-                      <img src={product.images[0].toString()} alt={product.name}/>
+                      <img src={(product.images[0] || "").toString()} alt={product.name}/>
                     </div>
                   </div>
 
@@ -347,7 +347,7 @@ const handleSubmit = (e: { preventDefault: () => void; }) => {
                       <p className="text-xs text-base-content/60 mt-2 text-center">Leave empty to keep current images</p>
                     )}
                 </div>
-                {imagePreviews.length > 0 && (
+                {(imagePreviews.length ?? 0) > 0 && (
                   <div className="flex gap-2 mt-2">
                     {imagePreviews.map((preview, index) => (
                       <div key={index} className="avatar">

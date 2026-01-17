@@ -91,15 +91,16 @@ const DashboardPage = () => {
                         </div>
                       </td>
 
-                      <td>
-                        <div>
+                    <td>
+                      <div>
                         <div className="font-medium">
-                          {(order.orderItems?.length || 0) > 1 
-                            ? `${order.orderItems[0]?.product?.name || 'Unknown'} +${(order.orderItems.length ?? 1) - 1} more` 
+                          {/* 1. Protect the initial length check */}
+                          {(order.orderItems?.length ?? 0) > 1 
+                            ? `${order.orderItems[0]?.product?.name || 'Unknown'} +${(order.orderItems?.length ?? 1) - 1} more` 
                             : order.orderItems?.[0]?.product?.name || 'Unknown'}
                         </div>
-                        </div>
-                      </td>
+                      </div>
+                    </td>
                       <td>
                         <div>
                         <div className="font-medium">${(order.totalPrice ?? 0).toFixed(2)}</div>                        </div>
