@@ -64,13 +64,19 @@ export async function createProduct (req,res){
     }
 }
 
-export async function getAllProducts(_, res) { //_ means not using variable
+export async function getAllProducts(req, res) { //_ means not using variable
     console.log("get prod")
     try {
-        const products = await Product.find({
-            isArchived:{$ne:true}
-        }).sort({createdAt:-1});
-        res.status(200).json({items: products.length,products})
+    // Backend (Express)
+    const limit = parseInt(req.query.limit) || 10;
+    const skip =  limit <= 10 ? 0 : limit - 10;
+    
+
+    const products = await Product.find({}).sort({createdAt: -1}).skip(skip).limit(limit);
+    const total = await Product.countDocuments();
+    const totalPages = Math.max(1, Math.ceil(total / 10));
+
+    res.status(200).json({ products, total,totalPages });
     } catch (error) {
         console.error("Error finding products", error);
         res.status(500).json({error:"Internal server error"});       

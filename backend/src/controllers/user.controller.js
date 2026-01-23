@@ -1,5 +1,7 @@
 
 
+import { error } from "console";
+import { Product } from "../models/product.model.js";
 import  {User}  from "../models/user.model.js";
 
 export async function addAddress(req, res) {
@@ -97,11 +99,15 @@ export async function addToWishList(req, res){
     try {
         const {productId} = req.body;
         const user = req.user;
+        console.log(productId)
 
         if(user.wishlist.includes(productId)){
             return res.status(400).json({error: "Product already in wishlist"});
         }
-        user.wishlist.push(productId);
+        const product = await Product.findById(productId);
+        if(!product)return res.status(404).json({error:"Product Not Found"})
+
+        user.wishlist.push(product);
         await user.save()
 
         res.status(200).json({message: "Product added to wishlist", wishlist: user.wishlist});
@@ -128,10 +134,10 @@ export async function removeFromWishList(req, res){
 
 export async function getWishList(req, res){
     try {
-        
-        const wishlist = await User.findById(req.user._id).populate("wishlist").wishlist
+        const wishlist = await User.findById(req.user._id).populate("wishlist")
         // if(wishlist.length === 0 || wishlist === undefined)return res.status(200).message({wishlist:0});
-        res.status(200).json({wishlist});
+        const result = wishlist.wishlist ?? []
+        res.status(200).json({wishlist:result});
 
      } catch (error) {       
         console.error("Error removing from wishlist:", error);

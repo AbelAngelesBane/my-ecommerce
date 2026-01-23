@@ -11,7 +11,7 @@ const DashboardPage = () => {
     queryKey:["orders"], 
     queryFn:orderApi.getAll,
   });
-    const {data:statsData, isLoading:statsLoading} = useQuery({
+  const {data:statsData, isLoading:statsLoading} = useQuery({
     queryKey:["stats"], 
     queryFn:statsApi.getDashboard,
   });

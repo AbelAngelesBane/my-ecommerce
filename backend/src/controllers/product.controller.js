@@ -4,9 +4,10 @@ import { Product } from "../models/product.model.js"
 
 export async function getProducts(req,res){
     try {
+        // const totalPages = Math.max(1, Math.ceil((data?.length || 0) / 10));
         const limit = req.query.limit || 10;
-        const skip = req.query.skip || 0;    
-        const products = await Product.find({}).sort({createdAt: -1}).skip(skip).limit(limit);
+        // const skip = req.query.skip || 0;    
+        const products = await Product.find({}).sort({createdAt: -1}).limit(limit);
     
         res.status(200).json({ items: products.length,products})
     } catch (error) {
@@ -30,10 +31,10 @@ export async function getProductsByCategory(req, res){
     try {
         const {category} = req.params;
         const limit = req.query.limit || 10;
-        const skip = req.query.skip || 0;       
+        // const skip = req.query.skip || 0;       
 
         if(!category) return res.status(400).json({error: "Please provide a category"});
-        const products = await Product.find({category:category}).sort({createdAt: -1}).skip(skip).limit(limit);
+        const products = await Product.find({category:category}).sort({createdAt: -1}).limit(limit);
         if(!products || products.length === 0)return res.status(200).json({message: "No product found in this category"});
 
         res.status(200).json({products});

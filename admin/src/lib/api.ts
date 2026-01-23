@@ -6,8 +6,12 @@ import axiosInstance from "./axios";
 
 
 export const productApi = {
-    getAll: async () => {
-        const {data} = await axiosInstance.get("/admin/products");
+    getAll: async (limit:number) => {
+        const {data} = await axiosInstance.get("admin/products",{
+            params:{
+                limit:limit
+            }
+        });
         return data;
     },
 
@@ -32,19 +36,26 @@ export const productApi = {
 
 export const orderApi = {
     getAll: async () =>{
-        const {data} = await axiosInstance.get("/admin/orders");
+        const {data} = await axiosInstance.get("admin/orders");
         return data;
     },
 
     updateStatus: async({orderId, status}:{orderId:string, status: string}) => {
-        const {data} = await axiosInstance.patch(`/admin/orders/${orderId}/status`, {status});
+        const {data} = await axiosInstance.patch(`admin/orders/${orderId}/status`, {status});
         return data;
     }
 }
 
 export const statsApi = {
     getDashboard: async ()=> {
-        const {data} = await axiosInstance.get("/admin/stats");
+        const {data} = await axiosInstance.get("admin/stats");
         return data;
+    }
+}
+
+export const customerApi = {
+    getAll: async ()=>{
+        const {data} = await axiosInstance.get(`admin/customers`);
+        return data
     }
 }
