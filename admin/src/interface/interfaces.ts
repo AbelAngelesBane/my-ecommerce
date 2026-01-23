@@ -6,12 +6,11 @@ export interface OrderModel{
     _id:string,
     user:string,
     clerkId:string,
-    orderItems: OrderItems[],    shippingAddress:Address,
+    orderItems: OrderItems[],    
+    shippingAddress:Address,
     totalPrice: number,
     status: string,
     updatedAt:string
-
-
 }
 export interface Address {
     fullName:string,
