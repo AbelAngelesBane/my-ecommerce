@@ -1,4 +1,4 @@
-import type { Product } from "./Order.interface";
+import type { Product } from "./order.interface";
 
 export interface ProductPageResponse {
   products: Product[];
