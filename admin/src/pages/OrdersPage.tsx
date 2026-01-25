@@ -3,28 +3,29 @@ import { orderApi } from "../lib/api"
 import PageLoader from "../components/PageLoader";
 import { dateFormatter, orderStatusBadge } from "../lib/utils";
 import type { OrderModel } from "../interface/order.interface";
+import type { AxiosError } from "axios";
+import ForbiddenPage from "../components/ForbiddenPage";
 
 function OrdersPage() {
-  const {data, isPending} = useQuery({
+  const {data, isPending, error} = useQuery({
     queryKey:["orders"],
     queryFn:orderApi.getAll,
 
   })
-
-const orders = isPending || !data ? [] : data.orders;  
-if(!isPending)console.log(data.orders)
+const isForbidden = (error as AxiosError)?.response?.status === 403;
+const orders = isPending || isForbidden || !data ? [] : data.orders;  
 //orderid, customer, items, total, status, date  
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
+      {isPending ? <PageLoader/> : isForbidden ? <ForbiddenPage/> : (
+        <>
       <div className="flex justify-between items-center">
         <div>
           <p className="text-2xl font-bold">Order</p>
           <p className="text-base-content/70 mt-1">Manage Orders</p>
         </div>
       </div>
-      {isPending ? <PageLoader/> : (
-      <>
       <div className="grid grid-cols-1">
         <div className="overflow-x-auto">
           <table className="table">
@@ -72,12 +73,9 @@ if(!isPending)console.log(data.orders)
             </tbody>      
           </table>
         </div>
-      </div>
-      </>
-      ) 
-      
-      }
-
+      </div>        
+        </>
+      ) }
 
     </div>
   )
