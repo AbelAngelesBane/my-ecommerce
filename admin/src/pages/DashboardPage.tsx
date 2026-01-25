@@ -3,11 +3,14 @@ import {orderApi, statsApi} from "../lib/api.ts"
 import { DollarSignIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from "lucide-react";
 import {dateFormatter, orderStatusBadge} from "../lib/utils.ts";
 import type { OrderModel } from "../interface/interfaces.ts";
+import type { AxiosError } from "axios";
+import PageLoader from "../components/PageLoader.tsx";
+import ForbiddenPage from "../components/ForbiddenPage.tsx";
 
 
 
 const DashboardPage = () => {
-  const {data:ordersData, isLoading:ordersLoading} = useQuery({
+  const {data:ordersData, isLoading:ordersLoading, error} = useQuery({
     queryKey:["orders"], 
     queryFn:orderApi.getAll,
   });
@@ -15,6 +18,8 @@ const DashboardPage = () => {
     queryKey:["stats"], 
     queryFn:statsApi.getDashboard,
   });
+
+  const isFordbidden = (error as AxiosError)?.status === 403
 
   const recentOrders =  ordersLoading || !ordersData ? [] : ordersData.orders || []
   const stats = [
@@ -44,6 +49,7 @@ const DashboardPage = () => {
   console.log("order isLoading", ordersLoading)
 
   return (
+    ordersLoading ? <PageLoader/> : isFordbidden ? <ForbiddenPage/> : 
     <div className="space-y-6">
       <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-100">
         {

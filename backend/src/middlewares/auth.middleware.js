@@ -10,12 +10,12 @@ export const protectRoute = [
         try {
             // const clerkId = req.auth().userId;
 
-            const clerkId = ENV.NODE_ENV === "development" ? "user_379mC8pwTxWHIPu0luG9G20pR3V" : req.auth().userId;
-            if (!clerkId)return res.status(401).json({message:"Unauthorized - invalid token"})
+            const clerkId = req.auth().userId;
+            if (!clerkId)return res.status(401).json({error:"Unauthorized - invalid token"})
             
 
             const user = await User.findOne({clerkId});
-            if(!user)return res.status(404).json({message:"Unauthorized - user not found"})
+            if(!user)return res.status(404).json({error:"Unauthorized - user not found"})
             req.clerkId = clerkId
             req.user = user
             console.log("SUER FOUND")
@@ -31,14 +31,14 @@ export const protectRoute = [
 export const adminOnly = async (req, res, next) =>{
     try {
         if(!req.user){
-            return res.status(401).json({message:"Unauthorized - user not found"})
+            return res.status(401).json({error:"Unauthorized - user not found"})
         }
         if(req.user.email.toLowerCase() !== ENV.ADMIN_EMAIL.toLocaleLowerCase()){
-            return res.status(403).json({message: "Forbidden - admin access only"})
+            return res.status(403).json({error: "Forbidden - admin access only"})
     } 
     next()
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error during authorization" });
+        return res.status(500).json({ error: "Internal server error during authorization" });
     }
    
 }
