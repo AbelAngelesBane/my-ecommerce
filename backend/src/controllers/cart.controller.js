@@ -5,31 +5,31 @@ import { Product } from "../models/product.model.js";
 //TO IMPLEMENT LATER, REMOVE ARCHIVED PRODUCTS FROM RESULT
 export async function getCart(req, res) {
     try {
-        let cart = await Cart.findOne({user: req.user._id}).populate("items.product");
-
-        //but honetsly, I'd just handle this in the frontend
+        let cart = await Cart.findOne({user: req.user._id}).populate("items.productId");
+        const clerkId = req.user.clerkId
         if(!cart){
+            console.log("REACHER HERE")
             const user = req.user;
 
             cart = await Cart.create({
                 user: user._id,
-                clerkId: user.clerkId,
-                items:[]
+                clerkId: clerkId,
+                items:cart ?? []
             });
         }
         // Filter out archived products
+        
         if(cart && cart.items) {
-            cart.items = cart.items.filter(item => 
-                item.product && !item.product.isArchived
-            );
-           await cart.save();
+            cart.items = cart.items.filter(item => {
+                return item.productId && !item.productId.isArchived});
+            await cart.save();
        }
 
 
         //get total here
         return res.status(200).json({cart});
     } catch (error) {
-        console.log("Error in cart controller");
+        console.log("Error in cart controller", error);
         return res.status(500).json({error:"Internal Server Error"});
     }
 }
@@ -60,10 +60,11 @@ export async function addToCart(req,res){
                 { user: req.user._id },
                 { 
                 $push: { 
+                    $setOnInsert: { clerkId: req.user.clerkId },
                     items: {productId, quantity } 
                     } 
                 },
-                { upsert: true, new: true } // upsert: true creates the cart if it doesn't exist
+                { upsert: true, new: true, runValidators:true } // upsert: true creates the cart if it doesn't exist
             );
         }
         return res.status(200).json({cart})

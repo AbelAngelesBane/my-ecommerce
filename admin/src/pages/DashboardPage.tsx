@@ -45,9 +45,6 @@ const DashboardPage = () => {
     },
   ]
 
-  console.log("order data", recentOrders);
-  console.log("order isLoading", ordersLoading)
-
   return (
     ordersLoading ? <PageLoader/> : isFordbidden ? <ForbiddenPage/> : 
     <div className="space-y-6">
