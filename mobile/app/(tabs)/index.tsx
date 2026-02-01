@@ -44,7 +44,7 @@ const HomeScreen = () => {
   // Pass the limit to your hook so the queryKey updates automatically
   const { data,
     queryClient,
-    fetchNextPage,isSuccess,
+    fetchNextPage,isSuccess,error,
     hasNextPage, isLoading, isFetching,
     isFetchingNextPage } = useProducts({ category: selectedCategory });
 
@@ -63,9 +63,10 @@ const HomeScreen = () => {
 
   //USE MEMO -> MEMORY.. WAIT DID THIS PRODUCT CHANGE? YES OR NO. USEMEMO REMEMBERS RATHER THAN REFETCH IF NO CHANGES
   const filteredProducts = useMemo(() => {
-    if (!products) return []
-    let filtered = products
+    console.log("is success, error", isSuccess,  data)
 
+    if (!products || []) return []
+    let filtered = products
     if (selectedCategory !== "All") {
       filtered = filtered.filter(product => product.category === selectedCategory)
     }
@@ -156,7 +157,7 @@ const HomeScreen = () => {
         </View>
       </View>
       <View className="flex-1">
-        {isLoading && products.length === 0 && !isRefreshing ? (
+        {isFetching && products.length === 0 && !isRefreshing ? (
           <ActivityIndicator size="large" className="mt-20" />
         ) : (filteredProducts.length) === 0  && !isRefreshing && !isLoading ? <NoProductFound /> : (
           <FlatList

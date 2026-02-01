@@ -15,7 +15,8 @@ export function useProducts({category}:{category:string}) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isSuccess
+    isSuccess,
+    error
   } = useInfiniteQuery({
     queryKey: ["products", category],
     queryFn: async ({ pageParam }) => {
@@ -26,13 +27,14 @@ export function useProducts({category}:{category:string}) {
     },
     getNextPageParam: (lastPage, allPages) => {
       // If last page has data, return next page number, else undefined
-      const typedLastPage = (lastPage as ProductResponse) ?? []; //to object response then
+      const typedLastPage = (lastPage as ProductResponse); //to object response then
       //if products.length is greater than 0 then allPages + 1, all pages coming from tanstack
-      return typedLastPage.products.length > 0
+      return (typedLastPage.products?.length ?? 0) > 0
         ? allPages.length + 1
         : undefined;
     },
     initialPageParam: 1,
+
   });
   
 
@@ -43,6 +45,6 @@ export function useProducts({category}:{category:string}) {
     isFetching,
     hasNextPage,
     isFetchingNextPage,
-    queryClient
+    queryClient,error
   };
 }
