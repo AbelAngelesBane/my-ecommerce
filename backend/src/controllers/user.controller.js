@@ -128,7 +128,8 @@ export async function removeFromWishList(req, res){
 
         res.status(200).json({wishlist:user.wishlist})
     } catch (error) {
-        
+         console.error("Error deleting wishlist:", error);
+        res.status(500).json({ error: "Internal Server Error" });  
     }
 }
 

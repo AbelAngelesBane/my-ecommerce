@@ -1,10 +1,6 @@
 import axiosInstance from "./axios";
 
 
-
-
-
-
 export const productApi = {
     getAll: async (limit:number) => {
         const {data} = await axiosInstance.get("admin/products",{
