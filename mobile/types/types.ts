@@ -11,6 +11,10 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
 }
+export interface ProductResponse{
+  items:number,
+  products:Product[]
+}
 
 export interface User {
   _id: string;
