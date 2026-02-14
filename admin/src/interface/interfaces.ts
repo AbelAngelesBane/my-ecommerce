@@ -48,5 +48,6 @@ export interface ProductParams {
     price: number,
     stock: number,
     category: string,
-    images:File[]
+    images:File[],
+    isArchived:boolean
 }

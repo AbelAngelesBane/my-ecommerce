@@ -58,10 +58,12 @@ export async function getProductsByCategory(req, res){
         // const skip = req.query.skip || 0;       
 
         if(!category) return res.status(400).json({error: "Please provide a category"});
-        category = category.toLowerCase();
+        category = category;
         const [products, totalItems] =  await Promise.all([
-            category === "all" ?  Product.find().sort({ createdAt: -1 }).skip(skip).limit(limit) : Product.find({category:category}).sort({createdAt: -1}).skip(skip).limit(limit),
-            Product.countDocuments()
+            category === "All" ?  Product.find({
+                isArchived:false
+            }).sort({ createdAt: -1 }).skip(skip).limit(limit) : Product.find({category:category, isArchived:false}).sort({createdAt: -1}).skip(skip).limit(limit),
+            Product.countDocuments({ isArchived: false })
         ]) 
 
         const totalPages = Math.ceil(totalItems / limit);

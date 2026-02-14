@@ -8,7 +8,7 @@ import {
   TextInput,
   Image,
   RefreshControl,
-  Platform
+  Platform,
 } from "react-native";
 import SafeScreen from "@/components/SafeScreen";
 import { useProducts } from "@/hooks/useProduct";
@@ -18,10 +18,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { FlyingImage } from "@/components/FlyingObject";
 import { useCartStore } from "@/store/userCartStore";
 import { Product } from "@/types/types";
-import useWishList from "@/hooks/useWishList";
 import NoProductFound from "@/components/NoProductFound";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
+import * as Sentry from '@sentry/react-native';
+
 
 const CATEGORIES = [
   { name: "All", icon: "grid-outline" as const },
@@ -30,42 +31,37 @@ const CATEGORIES = [
   { name: "Sports", image: require("../../assets/images/sports.png") },
   { name: "Books", image: require("../../assets/images/books.png") },
 ]
-
+//TODO: Add sentry to payment
 const PLATFORM = Platform.OS
 const HomeScreen = () => {
-  const {isSignedIn}=useAuth()
+  const { isSignedIn } = useAuth()
   const [animatingItem, setAnimatingItem] = useState<{ source: string, x: number, y: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   //(state) => state.addItem this callback is called Selector
   const addItem = useCartStore((state) => state.addItem);
-  const [isRefreshing, setRefreshing] = useState(false)
+  const [isRefreshing, setRefreshing] = useState(false);
+
 
   // Pass the limit to your hook so the queryKey updates automatically
   const { data,
     queryClient,
-    fetchNextPage,isSuccess,error,
-    hasNextPage, isLoading, isFetching,
+    fetchNextPage,
+    hasNextPage, error, isFetching,
     isFetchingNextPage } = useProducts({ category: selectedCategory });
 
   const products = useMemo(() => data?.pages?.flatMap(page => page.products) ?? [], [data])
-
-
-
   //callback for ProductGrid button location
   const handleAddToCart = (image: string, x: number, y: number, product: Product) => {
     setAnimatingItem({ source: image, x, y });
-
     addItem(product);
-
-    console.log("Item added to global cart!", product);
   };
 
   //USE MEMO -> MEMORY.. WAIT DID THIS PRODUCT CHANGE? YES OR NO. USEMEMO REMEMBERS RATHER THAN REFETCH IF NO CHANGES
   const filteredProducts = useMemo(() => {
-    console.log("is success, error", isSuccess,  data)
 
-    if (!products || []) return []
+
+    if (!products) return []
     let filtered = products
     if (selectedCategory !== "All") {
       filtered = filtered.filter(product => product.category === selectedCategory)
@@ -75,41 +71,36 @@ const HomeScreen = () => {
       filtered = filtered.filter(product => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
     }
     filtered = Array.from(new Map(filtered.map(p => [p._id, p])).values());
-
     return filtered
   }, [products, selectedCategory, searchQuery])
 
   const onRefresh = async () => {
-    console.log("Refreshing")
     setRefreshing(true)
     //This refetches 3 pages
     // await queryClient.refetchQueries({queryKey:["products"]});
-
     //This RESETS page and starts back at page 1
-    try {
-          await queryClient.resetQueries({
-      queryKey: ["products",  selectedCategory ],
+    await queryClient.resetQueries({
+      queryKey: ["products", selectedCategory],
       exact: false,
-    
     });
-    console.log("isSuccess")
-    } catch (error) {
-          console.log("is failed")
-
-    }
-
     setRefreshing(false)
   }
 
-  if(!isSignedIn) return <Redirect href={"/(auth)"} />
+  if (!isSignedIn) return <Redirect href={"/(auth)"} />
 
   return (
     <SafeScreen>
       {/* <HomeHeaderContent items={data?.items ?? 0} /> */}
+
       <View className='px-6 pb-4 pt-6'>
         <View className='flex-row items-center justify-between mb-6'>
           <View>
-            <Text className='text-text-primary text-3xl'>Shop</Text>
+            <View className="flex-row">
+              <Text className='text-text-primary text-3xl'>Laz</Text>
+              <Text className='text-red-400 text-3xl'>Tech</Text>
+            </View>
+
+
             <Text className='text-text-secondary text-sm'>Browse all products</Text>
           </View>
 
@@ -159,11 +150,16 @@ const HomeScreen = () => {
       <View className="flex-1">
         {isFetching && products.length === 0 && !isRefreshing ? (
           <ActivityIndicator size="large" className="mt-20" />
-        ) : (filteredProducts.length) === 0  && !isRefreshing && !isLoading ? <NoProductFound /> : (
+        ) : (
           <FlatList
+            ListEmptyComponent={
+              <NoProductFound />
+            }
             data={filteredProducts}
             //Product grid returns the numbers (x,y) here and then passed to handleAddToCart
-            renderItem={({ item }) => <ProductsGrid product={item} onPressPlus={(x: number, y: number, product: Product) => handleAddToCart(item.images[0], x, y, product)} />}
+            renderItem={({ item }) => <ProductsGrid
+              product={item}
+              onPressPlus={(x: number, y: number, product: Product) => handleAddToCart(item.images[0], x, y, product)} />}
             keyExtractor={(item) => item._id}
             numColumns={2}
             onEndReached={() => {
@@ -185,6 +181,7 @@ const HomeScreen = () => {
             }
             contentContainerStyle={{
               paddingHorizontal: 16,
+
             }}
             columnWrapperStyle={{ justifyContent: "space-between" }}
           />
