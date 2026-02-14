@@ -2,7 +2,7 @@ import {mongoose} from "mongoose"
 
 
 const cartItemSchema =({
-    productId: {
+    product: {
         type:mongoose.Types.ObjectId,
         ref:"Product",
         required:true

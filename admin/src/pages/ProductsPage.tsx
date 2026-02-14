@@ -240,9 +240,13 @@ function ProductsPage() {
                                   {product.category}
                                 </p>
                               </div>
+                              <div className="space-x-1">
                               <div className={`badge ${status.class}`}>
                                 {status.text}
                               </div>
+                              {(product.isArchived) && <div className="badge badge-error">archived</div>}
+                              </div>
+                              
                             </div>
 
                             <div className="flex items-center gap-6 mt-4">
@@ -282,7 +286,7 @@ function ProductsPage() {
                             >
                               {archivingProductId === product._id ? (
                                 <span className="loading loading-spinner loading-xs"></span>
-                              ) : (
+                              ) : ((product.isArchived ?? false) ? null :
                                 <Trash2Icon className="w-5 h-5" />
                               )}
                             </button>

@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/clerk-expo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from "react-native";
+import { useCartStore } from "@/store/userCartStore";
 
+import useCart from "@/hooks/useCart";
 
 const TabsLayout = () => {
+      //implement later, if user signedin not equals to user stored in storage, clear!
+      //and store user token in storage or 
+      const { cartData, isSuccess, cartError} = useCart()
+      
+      
+      const setItems = useCartStore((state) => state.setItems)
+      const cartItems = (cartData?.data?.cart?.items ?? [])
+      const totalCartItems = useCartStore((state) => state.getTotalItems());      //sync with zustand
+      useEffect(()=>{
+        if(isSuccess){
+          setItems(cartItems)
+          }
+      },[cartData])
+
+  
+  
   const insets = useSafeAreaInsets();
   const {isSignedIn, isLoaded} = useAuth()
   if(!isLoaded)return null
@@ -51,6 +69,7 @@ const TabsLayout = () => {
           headerShown:false,
           title: "cart",
           tabBarIcon: ({ color, size }) => <Ionicons name="cart" size={size} color={color}/>,
+          tabBarBadge:(totalCartItems) 
         }}
       />
       <Tabs.Screen

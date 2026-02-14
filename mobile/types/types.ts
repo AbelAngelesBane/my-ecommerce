@@ -10,6 +10,7 @@ export interface Product {
   totalReviews: number;
   createdAt: string;
   updatedAt: string;
+  isSelected?:boolean
 }
 export interface ProductResponse{
   items:number,
@@ -87,6 +88,7 @@ export interface CartItem {
   _id: string;
   product: Product;
   quantity: number;
+  subTotal?:number;
 }
 
 export interface Cart {
