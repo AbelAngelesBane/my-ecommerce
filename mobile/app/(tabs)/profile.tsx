@@ -52,7 +52,7 @@ const ProfileScreen = () => {
               </View>
               <View className='flex-1 ml-4'>
                 <Text className='text-text-primary font-bold mb-1 text-2xl'>{user?.firstName}{" "}{user?.lastName}</Text>
-                <Text className='text-sm text-text-secondary'>{user?.emailAddresses[0].emailAddress}</Text>
+                <Text className='text-sm text-text-secondary'>{user?.emailAddresses[0]?.emailAddress || "No email address"}</Text>
               </View>
             </View>
           </View>
