@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSSO } from '@clerk/clerk-expo'
-import { Alert } from "react-native";
+import { Alert, } from "react-native";
+import * as Linking from 'expo-linking'; // 1. Import Linking
 
 
 function useSocialAuth (){
@@ -11,9 +12,11 @@ function useSocialAuth (){
         setLoadingStrategy(strategy)
 
         try {
-            
-            const {createdSessionId, setActive} =  await startSSOFlow({strategy:strategy})
-
+            const redirectUrl = Linking.createURL('/', { scheme: 'mobile' });
+            const {createdSessionId, setActive} =  await startSSOFlow({
+                strategy:strategy,
+                redirectUrl})
+                
             if(createdSessionId && setActive){
                 await setActive({session:createdSessionId})
             }

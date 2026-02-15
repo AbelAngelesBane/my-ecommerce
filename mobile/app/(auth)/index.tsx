@@ -10,6 +10,7 @@ import useSocialAuth from "@/hooks/useSocialAuth";
 import SafeScreen from "@/components/SafeScreen";
 
 const AuthScreen = () => {
+  
   const { loadingStrategy, handleSocialAuth } = useSocialAuth();
   return (
     <SafeScreen>

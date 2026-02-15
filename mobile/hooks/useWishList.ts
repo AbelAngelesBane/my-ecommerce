@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 
 
 const useWishList = () => {
-    const{api, isAuthenticated} = useApi();
+    const{api} = useApi();
     const queryClient = useQueryClient(); //Master controller, invalidates cache and forces query (ex. [wishlist]) to re-run
 
     const {data:wishlist, isLoading:isLoadingWishList, isError:isErrorOnWishList} = useQuery({
