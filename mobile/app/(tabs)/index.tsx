@@ -13,7 +13,7 @@ import {
 import SafeScreen from "@/components/SafeScreen";
 import { useProducts } from "@/hooks/useProduct";
 import ProductsGrid from "@/components/ProductsGrid";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { FlyingImage } from "@/components/FlyingObject";
 import { useCartStore } from "@/store/userCartStore";
@@ -21,7 +21,6 @@ import { Product } from "@/types/types";
 import NoProductFound from "@/components/NoProductFound";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
-import * as Sentry from '@sentry/react-native';
 
 
 const CATEGORIES = [

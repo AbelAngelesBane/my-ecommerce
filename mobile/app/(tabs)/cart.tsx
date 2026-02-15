@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import { useCartStore } from "@/store/userCartStore";
 import { useQueryClient } from "@tanstack/react-query";
 
+
+//TODOS: Clear cart on logout
 const CartScreen = () => {
   const queryClient = useQueryClient()
   //Stored
